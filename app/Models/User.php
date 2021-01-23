@@ -122,10 +122,6 @@ class User extends Authenticatable
             ->where('start_time', '<', Carbon::now()->addDays($numberOfDaysPerPeriod))
             ->count();
 
-        if ($nbOfBookingRequest < $numberOfBookingRequestPerPeriod) {
-            return true;
-        } else {
-            return false;
-        }
+        return $nbOfBookingRequest < $numberOfBookingRequestPerPeriod;
     }
 }
