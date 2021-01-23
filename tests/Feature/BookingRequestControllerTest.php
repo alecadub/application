@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Availability;
+use App\Models\Role;
 use App\Models\Reservation;
 use Faker\Factory;
 use Tests\TestCase;
@@ -319,6 +320,53 @@ class BookingRequestControllerTest extends TestCase
     /**
      * @test
      */
+    public function user_can_create_booking_request_if_he_did_not_exceed_his_booking_request_per_period()
+    {
+        $user = User::factory()->create();
+        $role = Role::factory()->create();
+        $user->assignRole($role);
+
+        $room = Room::factory()->create(['status' => 'available']);
+        $booking_request = $this->createBookingRequest($room, false);
+
+        $this->createBookingRequestAvailabilities($booking_request, $room);
+
+        $this->assertDatabaseMissing('booking_requests', ['room_id' => $booking_request->room_id, 'start_time' => $booking_request->start_time, 'end_time' => $booking_request->end_time]);
+
+        $response = $this->actingAs($user)->post('/bookings', ['room_id' => $booking_request->room_id, 'start_time' => $booking_request->start_time->toDateTimeString(), 'end_time' => $booking_request->end_time->toDateTimeString()]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('booking_requests', ['room_id' => $booking_request->room_id, 'start_time' => $booking_request->start_time, 'end_time' => $booking_request->end_time]);
+    }
+
+    /**
+     * @test
+     */
+    public function user_cannot_create_booking_request_if_he_exceed_his_booking_request_per_period_and_request_inside_period()
+    {
+        $user = User::factory()->create();
+        $role = Role::factory()->create();
+        $user->assignRole($role);
+
+        $room = Room::factory()->create(['status' => 'available']);
+        $this->createBookingRequest($room, true, "approved");
+
+        $anotherRoom = Room::factory()->create(['status' => 'available']);
+        $anotherBookingRequest = $this->createBookingRequest($anotherRoom, false);
+
+        $this->createBookingRequestAvailabilities($anotherBookingRequest, $anotherRoom);
+
+        $this->assertDatabaseMissing('booking_requests', ['room_id' => $anotherBookingRequest->room_id, 'start_time' => $anotherBookingRequest->start_time, 'end_time' => $anotherBookingRequest->end_time]);
+
+        $response = $this->actingAs($user)->post('/bookings', ['room_id' => $anotherBookingRequest->room_id, 'start_time' => $anotherBookingRequest->start_time->toDateTimeString(), 'end_time' => $anotherBookingRequest->end_time->toDateTimeString()]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseMissing('booking_requests', ['room_id' => $anotherBookingRequest->room_id, 'start_time' => $anotherBookingRequest->start_time, 'end_time' => $anotherBookingRequest->end_time]);
+    }
+
+    /**
+     * @test
+     */
     public function testBookingRequestsIndexPageLoads()
     {
         $room = Room::factory()->make();
@@ -366,12 +414,18 @@ class BookingRequestControllerTest extends TestCase
     /**
      * helper function
      */
-    private function createBookingRequest($create = true)
+    private function createBookingRequest($create = true, $status = null)
     {
+        $input = [];
+
+        if($status){
+            $input['status'] = $status;
+        }
+        
         if ($create) {
-            $booking_request = BookingRequest::factory()->create();
+            $booking_request = BookingRequest::factory()->create($input);
         } else {
-            $booking_request = BookingRequest::factory()->make();
+            $booking_request = BookingRequest::factory()->make($input);
         }
         return $booking_request;
     }

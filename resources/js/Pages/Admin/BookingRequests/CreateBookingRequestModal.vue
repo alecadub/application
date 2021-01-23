@@ -70,7 +70,12 @@
                     class="mt-2"
                 />
             </div>
-          </div>
+            <div class="m-6">
+                <jet-input-error
+                    :message="createBookingRequestForm.error('booking_request_exceeded')"
+                    class="mt-2"
+                />
+            </div>
         </template>
 
         <template #footer>
