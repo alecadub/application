@@ -247,6 +247,89 @@ class RoomControllerTest extends TestCase
     /**
      * @test
      */
+    public function admins_can_update_rooms_with_availabilities()
+    {
+        $room = Room::factory()->create();
+        $user = User::factory()->make();
+
+        $this->assertDatabaseHas('rooms', [
+            'name' => $room->name, 'number' => $room->number,
+            'floor' => $room->floor, 'building' => $room->building,
+            'status' => $room->status, 'attributes' => json_encode($room->attributes),
+        ]);
+
+        $response = $this->actingAs($user)->put('/rooms/' . $room->id, [
+            'name' => 'the room',
+            'number' => '24',
+            'floor' => '2009',
+            'building' => 'wiseau',
+            'status' => 'available',
+            'capacity_standing' => '100',
+            'capacity_sitting' => '80',
+            'food' => 'true',
+            'alcohol' => 'true',
+            'a_v_permitted' => 'false',
+            'projector' => 'true',
+            'television' => 'true',
+            'computer' => 'true',
+            'whiteboard' => 'true',
+            'sofas' => '1',
+            'coffee_tables' => '1',
+            'tables' => '1',
+            'chairs' => '1',
+            'ambiant_music' => 'true',
+            'sale_for_profit' => 'false',
+            'fundraiser' => 'false',
+            'room_type'  => 'Lounge',
+            'availabilities' => [
+                'Monday' => [
+                    'opening_hours' => '12:00:00',
+                    'closing_hours' => '13:00:00'
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(302);
+
+        $this->assertDatabaseHas('rooms', [
+            'name' => 'the room',
+            'number' => '24',
+            'floor' => '2009',
+            'building' => 'wiseau',
+            'status' => 'available',
+            'attributes' => json_encode([
+                'capacity_standing' => '100',
+                'capacity_sitting' => '80',
+                'food' => 'true',
+                'alcohol' => 'true',
+                'a_v_permitted' => 'false',
+                'projector' => 'true',
+                'television' => 'true',
+                'computer' => 'true',
+                'whiteboard' => 'true',
+                'sofas' => '1',
+                'coffee_tables' => '1',
+                'tables' => '1',
+                'chairs' => '1',
+                'ambiant_music' => 'true',
+                'sale_for_profit' => 'false',
+                'fundraiser' => 'false'
+            ]),
+        ]);
+
+        $this->assertDatabaseHas(
+            'availabilities',
+            [
+                'weekday' => 'Monday',
+                'opening_hours' => '12:00:00',
+                'closing_hours' => '13:00:00'
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
     public function admins_can_delete_rooms()
     {
         $room = Room::factory()->create();
