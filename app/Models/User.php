@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -102,26 +104,28 @@ class User extends Authenticatable
         return $numberOfDaysPerPeriod;
     }
 
-    public function canMakeAnotherBookingRequest($startDate): bool
-    {
-        $numberOfBookingRequestPerPeriod = $this->getUserNumberOfBookingRequestPerPeriod();
-        $numberOfDaysPerPeriod = $this->getUserNumberOfDaysPerPeriod();
+  public function canMakeAnotherBookingRequest($startDate): bool
+  {
+    $numberOfBookingRequestPerPeriod = $this->getUserNumberOfBookingRequestPerPeriod();
+    $numberOfDaysPerPeriod = $this->getUserNumberOfDaysPerPeriod();
 
-        if (is_null($numberOfBookingRequestPerPeriod) && is_null($numberOfDaysPerPeriod)) {
-            return true;
-        }
-
-        if (Carbon::parse($startDate)->diffInDays(Carbon::now()) > $numberOfDaysPerPeriod) {
-            return true;
-        }
-
-        $nbOfBookingRequest = BookingRequest::query()
-            ->where('user_id', '=', $this->id)
-            ->where('status', '=', 'approved')
-            ->where('start_time', '>', Carbon::now())
-            ->where('start_time', '<', Carbon::now()->addDays($numberOfDaysPerPeriod))
-            ->count();
-
-        return $nbOfBookingRequest < $numberOfBookingRequestPerPeriod;
+    if (is_null($numberOfBookingRequestPerPeriod) && is_null($numberOfDaysPerPeriod)) {
+      return true;
     }
+
+    if (Carbon::parse($startDate)->diffInDays(Carbon::now()) > $numberOfDaysPerPeriod) {
+      return true;
+    }
+
+    $nbOfBookingRequest = BookingRequest::query()
+      ->whereHas('reservations', function (Builder $query) use ($numberOfDaysPerPeriod) {
+        $query->where('start_time', '>', Carbon::now());
+        $query->where('start_time', '<', Carbon::now()->addDays($numberOfDaysPerPeriod));
+      })
+      ->where('user_id', '=', $this->id)
+      ->where('status', 'like', '%approved%')
+      ->count();
+
+    return $nbOfBookingRequest < $numberOfBookingRequestPerPeriod;
+  }
 }

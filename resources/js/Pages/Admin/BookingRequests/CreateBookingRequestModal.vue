@@ -76,6 +76,7 @@
                     class="mt-2"
                 />
             </div>
+          </div>
         </template>
 
         <template #footer>
