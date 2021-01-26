@@ -123,7 +123,7 @@ class User extends Authenticatable
         $query->where('start_time', '<', Carbon::now()->addDays($numberOfDaysPerPeriod));
       })
       ->where('user_id', '=', $this->id)
-      ->where('status', 'like', '%approved%')
+      ->where('status', 'not like', '%declined%')
       ->count();
 
     return $nbOfBookingRequest < $numberOfBookingRequestPerPeriod;
