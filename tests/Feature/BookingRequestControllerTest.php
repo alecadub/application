@@ -354,6 +354,39 @@ class BookingRequestControllerTest extends TestCase
     ]);
   }
 
+  /**
+   * @test
+   */
+  public function user_cannot_create_booking_request_if_he_did_not_exceed_his_booking_request_per_period()
+  {
+    $user = User::factory()->create();
+    $role = Role::factory()->create();
+    $user->assignRole($role);
+
+    $room = Room::factory()->create(['status' => 'available']);
+    $date = $this->faker->dateTimeInInterval('+'.$room->min_days_advance.' days', '+'.($room->max_days_advance-$room->min_days_advance).' days');
+
+    $this->createReservationAvailabilities($date, $room);
+    $booking = $this->createBookingRequest(true, ['status' => 'approved']);
+
+    Reservation::create([
+      'room_id' => $room->id,
+      'booking_request_id' => $booking->id,
+      'start_time' => $date->format('Y-m-d\TH:i:00'),
+      'end_time' => Carbon::parse($date)->addMinutes(1)->toDateTime()->format('Y-m-d\TH:i:00'),
+    ]);
+
+    $response = $this->actingAs($user)->post('/bookings', [
+      'room_id' => $room->id,
+      'start_time' => $date->format('Y-m-d\TH:i:00'),
+      'end_time' => Carbon::parse($date)->addMinutes(1)->toDateTime()->format('Y-m-d\TH:i:00'),
+      'status' => 'review'
+    ]);
+
+    $response->assertStatus(302);
+    $this->assertDatabaseCount('booking_requests', 1);
+  }
+
     /**
      * @test
      */
