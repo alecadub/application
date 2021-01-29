@@ -1,5 +1,5 @@
 <template>
-  <jet-dialog-modal :show="room" @close="closeModal" max-width="">
+  <jet-dialog-modal :show="room" @close="closeModal">
     <template #title> Availabilities </template>
 
     <template #content>
@@ -114,7 +114,6 @@ export default {
     JetSecondaryButton,
     Calendar,
     DatePicker,
-    moment
   },
 
   props: {
