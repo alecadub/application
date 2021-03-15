@@ -80,7 +80,6 @@ export default {
   },
   watch: {
     academicDate(academicDate) {
-      console.log('test');
       this.updateDateTimeForm.start_date = academicDate.start_date
       this.updateDateTimeForm.end_date = academicDate.end_date;
     }
