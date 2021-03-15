@@ -6,20 +6,38 @@
     <template #form>
       <div class="col-span-12 sm:col-span-6">
         <div class="p-2">
-          <jet-label for="general_information" value="General Information" />
-          <RichTextEditor
-            :editable="true"
-            :incomingText="general_information.html"
-            :onSave="onBookingsGeneralInformationSave"
-          />
+          <jet-label for="general_information" value="General Information"/>
+          <div v-if="general_information">
+            <RichTextEditor
+              :editable="true"
+              :incomingText="general_information.html"
+              :onSave="onBookingsGeneralInformationSave"
+            />
+          </div>
+          <div v-else>
+            <RichTextEditor
+              :editable="true"
+              :incomingText="''"
+              :onSave="onBookingsGeneralInformationSave"
+            />
+          </div>
         </div>
         <div class="p-2">
-          <jet-label for="event_description" value="Event description" />
-          <RichTextEditor
-            :editable="true"
-            :incomingText="event_description.html"
-            :onSave="onBookingsEventDescriptionSave"
-          />
+          <jet-label for="event_description" value="Event description"/>
+          <div v-if="event_description">
+            <RichTextEditor
+              :editable="true"
+              :incomingText="event_description.html"
+              :onSave="onBookingsEventDescriptionSave"
+            />
+          </div>
+          <div v-else>
+            <RichTextEditor
+              :editable="true"
+              :incomingText="''"
+              :onSave="onBookingsEventDescriptionSave"
+            />
+          </div>
         </div>
       </div>
     </template>
