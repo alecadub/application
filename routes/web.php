@@ -113,6 +113,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
                 ->name('date.restrictions.update')
                 ->middleware('permission:bookings.approve');
 
+            Route::post('/blackouts/all', [BlackoutController::class,  'createBlackoutForEveryRoom'])
+                ->name('all_blackout')
+                ->middleware(['permission:rooms.blackouts.create']);
+
             Route::name('blackouts.')->prefix('{room}/blackouts')->group(function() {
                 Route::get('/', [BlackoutController::class, 'index'])
                     ->name('index');

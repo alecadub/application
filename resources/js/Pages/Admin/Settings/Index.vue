@@ -24,6 +24,7 @@
             <div class="mb-5" v-for="academicDate in academic_dates">
               <AcademicDate :academicDate="academicDate"/>
             </div>
+            <CivicHoliday />
         </div>
     </app-layout>
 </template>
@@ -36,6 +37,7 @@ import AppLogo from "@src/Pages/Admin/Settings/AppLogo";
 import AppConfig from "@src/Pages/Admin/Settings/AppConfig";
 import BookingInformations from "@src/Pages/Admin/Settings/BookingInformations";
 import AcademicDate from "@src/Pages/Admin/Settings/AcademicDate"
+import CivicHoliday from "@src/Pages/Admin/Settings/CivicHoliday"
 
 export default {
     components: {
@@ -45,7 +47,8 @@ export default {
         AppLayout,
         BookingInformations,
         JetSectionBorder,
-        AcademicDate
+        AcademicDate,
+        CivicHoliday
     },
     props: {
         settings: {
