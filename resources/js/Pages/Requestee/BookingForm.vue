@@ -14,9 +14,7 @@
                 </template>
 
                 <template #description>
-                    <div v-if="bookings_event_description">
-                      <p v-html="bookings_event_description.data.html"></p>
-                    </div>
+                      <p v-if="bookings_event_description" v-html="bookings_event_description.data.html"></p>
                 </template>
 
                 <template #content>
@@ -101,9 +99,7 @@
                 </template>
 
                 <template #description>
-                  <div v-if="bookings_event_description">
-                    <p v-html="bookings_event_description.data.html"></p>
-                  </div>
+                    <p v-if="bookings_event_description" v-html="bookings_event_description.data.html"></p>
                 </template>
 
                 <template #content>
