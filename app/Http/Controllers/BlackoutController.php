@@ -139,7 +139,8 @@ class BlackoutController extends Controller
       "room" => $room]);
   }
 
-  public function createBlackoutForEveryRoom(Request $request){
+  public function createBlackoutForEveryRoom(Request $request)
+  {
       $request->validateWithBag('createBlackoutAll', [
           'start_date' => ['required', 'date'],
           'end_date' => ['required', 'date', "after:start"],
