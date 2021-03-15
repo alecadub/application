@@ -15,10 +15,15 @@
             <div class="mb-5">
                 <app-config :settings="settings.app_config"/>
             </div>
-            <BookingInformations 
-                :general_information="settings.general_information" 
-                :event_description="settings.event_description" 
-            />
+            <div class="mb-5">
+              <BookingInformations
+                :general_information="settings.general_information"
+                :event_description="settings.event_description"
+              />
+            </div>
+            <div class="mb-5" v-for="academicDate in academic_dates">
+              <AcademicDate :academicDate="academicDate"/>
+            </div>
         </div>
     </app-layout>
 </template>
@@ -30,6 +35,7 @@ import AppName from "@src/Pages/Admin/Settings/AppName";
 import AppLogo from "@src/Pages/Admin/Settings/AppLogo";
 import AppConfig from "@src/Pages/Admin/Settings/AppConfig";
 import BookingInformations from "@src/Pages/Admin/Settings/BookingInformations";
+import AcademicDate from "@src/Pages/Admin/Settings/AcademicDate"
 
 export default {
     components: {
@@ -39,6 +45,7 @@ export default {
         AppLayout,
         BookingInformations,
         JetSectionBorder,
+        AcademicDate
     },
     props: {
         settings: {
@@ -53,6 +60,9 @@ export default {
                 }
             },
         },
+        academic_dates: {
+          type: Array
+        }
     },
 }
 </script>

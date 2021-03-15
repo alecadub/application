@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AcademicDateController;
 use App\Http\Controllers\BlackoutController;
 use App\Http\Controllers\BookingRequestController;
 use App\Http\Controllers\BookingReviewController;
@@ -138,6 +139,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::post('app_logo', [SettingsController::class, 'storeAppLogo'])->name('app.logo');
             Route::post('app_name', [SettingsController::class, 'storeAppName'])->name('app.name');
             Route::post('app_config', [SettingsController::class, 'setAppConfig'])->name('app.config');
+            Route::post('/academic_date/{academicDate}', [AcademicDateController::class, 'updateAcademicDate'])->name('app.academic_date');
         });
     });
 
