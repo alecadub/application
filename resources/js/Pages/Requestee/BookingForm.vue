@@ -14,7 +14,7 @@
                 </template>
 
                 <template #description>
-                      <p v-if="bookings_event_description" v-html="bookings_event_description.data.html"></p>
+                      <p v-if="bookings_general_information" v-html="bookings_general_information.data.html"></p>
                 </template>
 
                 <template #content>
