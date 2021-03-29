@@ -30,7 +30,7 @@
       <thead>
         <tr>
           <th @click="sort('name')" id="id_room_id" class="cursor-pointer">
-            Room ID
+            Room Name
             <span v-if="currentSort == 'name'">
               <span v-if="currentSortDir == 'asc'">
                 &blacktriangle;
