@@ -5,10 +5,13 @@ namespace Tests\Browser;
 use App\Models\AcademicDate;
 use App\Models\Room;
 use App\Models\User;
+use Carbon\Carbon;
 use Database\Seeders\EasyUserSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Facebook\WebDriver\WebDriverKeys;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
+use Tests\Browser\Components\DateTimePicker;
 use Tests\DuskTestCase;
 
 class SettingsPageTest extends DuskTestCase
@@ -67,23 +70,30 @@ class SettingsPageTest extends DuskTestCase
     ]);
 
     $this->browse(function (Browser $browser) {
+      $startDate = Carbon::parse('2020-03-03');
+      $endDate = Carbon::parse('2020-04-04');
+
       $browser->loginAs(User::first())->visit('/admin/settings')
-        ->type('#Fall_start_date', '2020')
-        ->keys('#Fall_start_date', ['{tab}'])
-        ->type('#Fall_start_date', '03')
-        ->type('#Fall_start_date', '03')
-        ->type('#Fall_end_date', '2020')
-        ->keys('#Fall_end_date', ['{tab}'])
-        ->type('#Fall_end_date', '04')
-        ->type('#Fall_end_date', '04')
+        ->keys(
+          '#Fall_start_date',
+          $startDate->format('Y'),
+          ['{right}', $startDate->format('m')],
+          $startDate->format('d')
+        )
+        ->keys(
+          '#Fall_end_date',
+          $endDate->format('Y'),
+          ['{right}', $endDate->format('m')],
+          $endDate->format('d')
+        )
         ->press('#Fall_submit_button')
-        ->refresh()->pause(3000);
+        ->waitUntilMissingText("Updated.");
     });
 
-    $this->assertDatabaseHas('academic_dates', [
+    $this->assertDatabaseMissing('academic_dates', [
       'semester' => 'Fall',
-      'start_date' => '2020-03-03',
-      'end_date' => '2020-04-04'
+      'start_date' => '2020-01-01',
+      'end_date' => '2020-02-02'
     ]);
   }
 
@@ -93,13 +103,18 @@ class SettingsPageTest extends DuskTestCase
     Room::factory()->count($numberOfRoomToCreate)->create();
 
     $this->browse(function (Browser $browser) {
-      $browser->loginAs(User::first())->visit('/admin/settings')
-        ->press('#civic_start_date')
-        ->press('15')
-        ->press('#civic_end_date')
-        ->press('16')
-        ->press('#civic_submit_button')
-        ->refresh()->pause(3000);
+      $browser->loginAs(User::first())->visit('/admin/settings');
+
+      $browser->within(new DateTimePicker("civic_start_date"), function ($browser) {
+        $browser->setDatetime(10, 13);
+      })->pause(1000);
+
+      $browser->within(new DateTimePicker("civic_end_date"), function ($browser) {
+        $browser->setDatetime(10, 14);
+      })->pause(1000);
+
+      $browser->press('#civic_submit_button')
+        ->pause(3000);
     });
 
     $this->assertDatabaseCount('blackouts', $numberOfRoomToCreate);

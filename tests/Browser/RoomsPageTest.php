@@ -127,7 +127,7 @@ class RoomsPageTest extends DuskTestCase
       $browser->loginAs($admin);
       $browser->visit(new Rooms)
         ->assertSee($room->name)
-        ->press('Action')
+        ->press('ACTION MENU')
         ->press('Update')
         ->type('#Monday_opening_hours', '07')
         ->type('#Monday_opening_hours', '00')

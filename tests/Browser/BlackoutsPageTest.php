@@ -11,6 +11,7 @@ use Database\Seeders\RolesAndPermissionsSeeder;
 use Facebook\WebDriver\WebDriverKeys;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
+use Tests\Browser\Components\DateTimePicker;
 use Tests\DuskTestCase;
 
 class BlackoutsPageTest extends DuskTestCase
@@ -39,15 +40,17 @@ class BlackoutsPageTest extends DuskTestCase
         ]);
 
         $this->browse(function (Browser $browser) {
-            $browser->loginAs(User::first())->visit('/admin/rooms/1/blackouts')
-                ->press('#end')
-                ->press('15')
-                ->press('08')
-                ->press('#start')
-                ->press('15')
-                ->press('07')
-                ->select('#recurring', 'daily')
-                ->keys('#name', [WebDriverKeys::ESCAPE])
+            $browser->loginAs(User::first())->visit('/admin/rooms/1/blackouts');
+
+            $browser->within(new DateTimePicker("start"), function ($browser) {
+                $browser->setDatetime(15, 7);
+            })->pause(1000);
+
+            $browser->within(new DateTimePicker("end"), function ($browser) {
+                $browser->setDatetime(15, 8);
+            })->pause(1000);
+
+            $browser->select('#recurring', 'daily')
                 ->type('#name', 'apu')
                 ->press('#submit')
                 ->pause(8000);

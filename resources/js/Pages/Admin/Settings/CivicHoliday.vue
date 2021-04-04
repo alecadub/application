@@ -26,8 +26,7 @@
             value="Start date"
           />
           <date-time-picker
-            id="civic_start_date"
-            dusk="civic_start_date"
+            :id="'civic_start_date'"
             name="start_date"
             class="mt-1 block w-full"
             v-model="form.start_date"
@@ -40,8 +39,7 @@
           value="End date"
         />
         <date-time-picker
-          id="civic_end_date"
-          dusk="civic_end_date"
+          :id="'civic_end_date'"
           name="end_date"
           class="mt-1 block w-full"
           v-model="form.end_date"
