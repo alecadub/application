@@ -94,20 +94,10 @@ class SettingsPageTest extends DuskTestCase
 
     $this->browse(function (Browser $browser) {
       $browser->loginAs(User::first())->visit('/admin/settings')
-        ->type('#civic_start_date', '2020')
-        ->keys('#civic_start_date', ['{tab}'])
-        ->type('#civic_start_date', '03')
-        ->type('#civic_start_date', '03')
-        ->type('#civic_start_date', '07')
-        ->type('#civic_start_date', '00')
-        ->type('#civic_start_date', 'AM')
-        ->type('#civic_end_date', '2020')
-        ->keys('#civic_end_date', ['{tab}'])
-        ->type('#civic_end_date', '03')
-        ->type('#civic_end_date', '03')
-        ->type('#civic_end_date', '08')
-        ->type('#civic_end_date', '00')
-        ->type('#civic_end_date', 'AM')
+        ->press('#civic_start_date')
+        ->press('15')
+        ->press('#civic_end_date')
+        ->press('16')
         ->press('#civic_submit_button')
         ->refresh()->pause(3000);
     });
