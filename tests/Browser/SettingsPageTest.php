@@ -2,6 +2,8 @@
 
 namespace Tests\Browser;
 
+use App\Models\AcademicDate;
+use App\Models\Room;
 use App\Models\User;
 use Database\Seeders\EasyUserSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -39,7 +41,6 @@ class SettingsPageTest extends DuskTestCase
         ->refresh()->pause(3000)
         ->assertSourceHas('<title>New Name</title>')
         ->assertSee('New Name');
-
     });
   }
 
@@ -55,5 +56,62 @@ class SettingsPageTest extends DuskTestCase
         ->refresh()->pause(3000)
         ->assertSourceHas('<a href="/dashboard"><img src="' . url('/storage/logos/'));
     });
+  }
+
+  public function testAdminCanEditYearlyAcademicDates()
+  {
+    AcademicDate::create([
+      'semester' => 'Fall',
+      'start_date' => '2020-01-01',
+      'end_date' => '2020-02-02'
+    ]);
+
+    $this->browse(function (Browser $browser) {
+      $browser->loginAs(User::first())->visit('/admin/settings')
+        ->type('#Fall_start_date', '2020')
+        ->keys('#Fall_start_date', ['{tab}'])
+        ->type('#Fall_start_date', '03')
+        ->type('#Fall_start_date', '03')
+        ->type('#Fall_end_date', '2020')
+        ->keys('#Fall_end_date', ['{tab}'])
+        ->type('#Fall_end_date', '04')
+        ->type('#Fall_end_date', '04')
+        ->press('#Fall_submit_button')
+        ->refresh()->pause(3000);
+    });
+
+    $this->assertDatabaseHas('academic_dates', [
+      'semester' => 'Fall',
+      'start_date' => '2020-03-03',
+      'end_date' => '2020-04-04'
+    ]);
+  }
+
+  public function testAdminCanCreateCivicHolidays()
+  {
+    $numberOfRoomToCreate = 5;
+    Room::factory()->count($numberOfRoomToCreate)->create();
+
+    $this->browse(function (Browser $browser) {
+      $browser->loginAs(User::first())->visit('/admin/settings')
+        ->type('#civic_start_date', '2020')
+        ->keys('#civic_start_date', ['{tab}'])
+        ->type('#civic_start_date', '03')
+        ->type('#civic_start_date', '03')
+        ->type('#civic_start_date', '07')
+        ->type('#civic_start_date', '00')
+        ->type('#civic_start_date', 'AM')
+        ->type('#civic_end_date', '2020')
+        ->keys('#civic_end_date', ['{tab}'])
+        ->type('#civic_end_date', '03')
+        ->type('#civic_end_date', '03')
+        ->type('#civic_end_date', '08')
+        ->type('#civic_end_date', '00')
+        ->type('#civic_end_date', 'AM')
+        ->press('#civic_submit_button')
+        ->refresh()->pause(3000);
+    });
+
+    $this->assertDatabaseCount('blackouts', $numberOfRoomToCreate);
   }
 }
