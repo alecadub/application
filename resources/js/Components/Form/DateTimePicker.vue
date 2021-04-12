@@ -1,5 +1,5 @@
 <template>
-  <ctk-date-time-picker dusk="date-time-picker" :id="id" v-model="proxyValue" :minute-interval="minuteInterval" :format="format">
+  <ctk-date-time-picker color="#252f3f" button-color="#252f3f" dusk="date-time-picker" :id="id" v-model="proxyValue" :minute-interval="minuteInterval" :format="format">
     <slot></slot>
   </ctk-date-time-picker>
 </template>
