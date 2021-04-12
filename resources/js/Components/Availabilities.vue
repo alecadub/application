@@ -44,7 +44,6 @@ import JetDropdownLink from "@src/Jetstream/DropdownLink";
 import JetNavLink from "@src/Components/Navbar/NavLink";
 import JetSecondaryButton from "@src/Jetstream/SecondaryButton";
 import moment from "moment";
-import axios from "axios";
 
 export default {
   components: {
